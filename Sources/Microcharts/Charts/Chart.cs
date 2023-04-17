@@ -355,7 +355,7 @@ namespace Microcharts
                     var captionX = isLeft ? Margin : width - Margin - LabelTextSize;
                     var legendColor = entry.Color.WithAlpha((byte)(entry.Color.Alpha * AnimationProgress));
                     var valueColor =
-                        entry.ValueLabelColor.WithAlpha((byte)(entry.ValueLabelColor.Alpha * AnimationProgress));
+                        entry.Color.WithAlpha((byte)(entry.ValueLabelColor.Alpha * AnimationProgress));
                     var lblColor = entry.TextColor.WithAlpha((byte)(entry.TextColor.Alpha * AnimationProgress));
                     var rect = SKRect.Create(captionX, y, LabelTextSize, LabelTextSize);
 
@@ -365,20 +365,12 @@ namespace Microcharts
                         Color = legendColor
                     })
                     {
-                        canvas.DrawRect(rect, paint);
+                        canvas.DrawRoundRect(rect, new SKSize(LabelTextSize, LabelTextSize), paint);
                     }
 
-                    if (isLeft)
-                    {
-                        captionX += LabelTextSize + captionMargin;
-                    }
-                    else
-                    {
-                        captionX -= captionMargin;
-                    }
-
+                    captionX += LabelTextSize + captionMargin;
                     canvas.DrawCaptionLabels(entry.Label, lblColor, entry.ValueLabel, valueColor, LabelTextSize,
-                        new SKPoint(captionX, y + (LabelTextSize / 2)), isLeft ? SKTextAlign.Left : SKTextAlign.Right,
+                        new SKPoint(captionX, y + (LabelTextSize / 2)), SKTextAlign.Left,
                         Typeface, out var labelBounds);
                     labelBounds.Union(rect);
 

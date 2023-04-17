@@ -1,4 +1,4 @@
-﻿// Copyright (c) Aloïs DENIEL. All rights reserved.
+// Copyright (c) Aloïs DENIEL. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using SkiaSharp;
@@ -38,9 +38,9 @@ namespace Microcharts
 
                         var y = point.Y - ((bounds.Top + bounds.Bottom) / 2) - space;
 
-                        canvas.DrawText(text, point.X, y, paint);
+                        canvas.DrawText(text, point.X, point.Y + space / 2, paint);
 
-                        var labelBounds = GetAbsolutePositionRect(point.X, y, bounds, horizontalAlignment);
+                        var labelBounds = GetAbsolutePositionRect(point.X, point.Y + space / 2, bounds, horizontalAlignment);
                         totalBounds = labelBounds.Standardized;
                     }
                 }
