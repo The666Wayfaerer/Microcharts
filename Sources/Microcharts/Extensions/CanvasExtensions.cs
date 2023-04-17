@@ -81,6 +81,80 @@ namespace Microcharts
             }
         }
 
+        public static void DrawRightCaptionLabels(this SKCanvas canvas, string label, SKColor labelColor, string value, SKColor valueColor, float textSize, SKPoint point, SKTextAlign horizontalAlignment, SKTypeface typeface, float width, out SKRect totalBounds)
+        {
+            var hasLabel = !string.IsNullOrEmpty(label);
+            var hasValueLabel = !string.IsNullOrEmpty(value);
+
+            totalBounds = new SKRect();
+
+            if (hasLabel || hasValueLabel)
+            {
+                var hasOffset = hasLabel && hasValueLabel;
+                var captionMargin = textSize * 0.60f;
+                var space = hasOffset ? captionMargin : 0;
+
+                if (hasLabel)
+                {
+                    using (var paint = new SKPaint
+                    {
+                        TextSize = textSize,
+                        IsAntialias = true,
+                        Color = labelColor,
+                        IsStroke = false,
+                        TextAlign = horizontalAlignment,
+                        Typeface = typeface
+                    })
+                    {
+                        var bounds = new SKRect();
+                        var text = label;
+                        paint.MeasureText(text, ref bounds);
+
+                        var y = point.Y - ((bounds.Top + bounds.Bottom) / 2) - space;
+
+                        canvas.DrawText(text, point.X, point.Y + space / 2, paint);
+
+                        var labelBounds = GetAbsolutePositionRect(point.X, point.Y + space / 2, bounds, horizontalAlignment);
+                        totalBounds = labelBounds.Standardized;
+                    }
+                }
+
+                if (hasValueLabel)
+                {
+                    using (var paint = new SKPaint()
+                    {
+                        TextSize = textSize,
+                        IsAntialias = true,
+                        FakeBoldText = true,
+                        Color = valueColor,
+                        IsStroke = false,
+                        TextAlign = horizontalAlignment,
+                        Typeface = typeface
+                    })
+                    {
+                        var bounds = new SKRect();
+                        var text = value;
+                        paint.MeasureText(text, ref bounds);
+
+                        var y = point.Y - ((bounds.Top + bounds.Bottom) / 2) + space;
+
+                        canvas.DrawText(text, width - paint.MeasureText(text, ref bounds) - 2 * space, point.Y + space / 2, paint);
+
+                        var valueBounds = GetAbsolutePositionRect(width - textSize - space, point.Y + space / 2, bounds, horizontalAlignment);
+
+                        if (totalBounds.IsEmpty)
+                        {
+                            totalBounds = valueBounds;
+                        }
+                        else
+                        {
+                            totalBounds.Union(valueBounds);
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Draws the given point.
         /// </summary>

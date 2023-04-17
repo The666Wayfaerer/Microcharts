@@ -329,10 +329,11 @@ namespace Microcharts
         /// <param name="entries">The entries.</param>
         /// <param name="isLeft">If set to <c>true</c> is left.</param>
         /// <param name="isGraphCentered">Should the chart in the center always?</param>
+        /// <param name="isRightBound"></param>
         protected void DrawCaptionElements(SKCanvas canvas, int width, int height, List<ChartEntry> entries,
-            bool isLeft, bool isGraphCentered)
+            bool isLeft, bool isGraphCentered, bool isRightBound = false)
         {
-            var totalMargin = 2 * Margin;
+            var totalMargin = 5 * Margin;
             var availableHeight = height - (2 * totalMargin);
             var x = isLeft ? Margin : (width - Margin - LabelTextSize);
             var ySpace = (availableHeight - LabelTextSize) / ((entries.Count <= 1) ? 1 : entries.Count - 1);
@@ -352,7 +353,7 @@ namespace Microcharts
                 if (hasLabel || hasValueLabel)
                 {
                     var captionMargin = LabelTextSize * 0.60f;
-                    var captionX = isLeft ? Margin : width - Margin - LabelTextSize;
+                    var captionX = isLeft ? Margin : (Math.Min(width, height) + 2 * Margin);
                     var legendColor = entry.Color.WithAlpha((byte)(entry.Color.Alpha * AnimationProgress));
                     var valueColor =
                         entry.Color.WithAlpha((byte)(entry.ValueLabelColor.Alpha * AnimationProgress));
@@ -369,9 +370,16 @@ namespace Microcharts
                     }
 
                     captionX += LabelTextSize + captionMargin;
-                    canvas.DrawCaptionLabels(entry.Label, lblColor, entry.ValueLabel, valueColor, LabelTextSize,
-                        new SKPoint(captionX, y + (LabelTextSize / 2)), SKTextAlign.Left,
-                        Typeface, out var labelBounds);
+                    SKRect labelBounds;
+                    if (isRightBound)
+                    {
+                        canvas.DrawRightCaptionLabels(entry.Label, lblColor, entry.ValueLabel, valueColor, LabelTextSize, new SKPoint(captionX, y + (LabelTextSize / 2)), SKTextAlign.Left, Typeface, width, out labelBounds);
+
+                    }
+                    else
+                    {
+                        canvas.DrawCaptionLabels(entry.Label, lblColor, entry.ValueLabel, valueColor, LabelTextSize, new SKPoint(captionX, y + (LabelTextSize / 2)), SKTextAlign.Left, Typeface, out labelBounds);
+                    }
                     labelBounds.Union(rect);
 
                     if (DrawDebugRectangles)
