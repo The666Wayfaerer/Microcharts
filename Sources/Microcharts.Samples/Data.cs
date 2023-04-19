@@ -224,7 +224,9 @@ namespace Microcharts.Samples
                 new RadialGaugeChart
                 {
                     Entries = entries,
-                    LabelTextSize = 42
+                    LabelTextSize = 42,
+                    MaxValue = 360
+
                 },
                 new HalfRadialGaugeChart
                 {
@@ -255,24 +257,13 @@ namespace Microcharts.Samples
                     ValueLabel = "648",
                     Color = SKColor.Parse("#77d065"),
                 },
-                new ChartEntry(null)
-                {
-                    Label = "React",
-                    ValueLabel = "",
-                    Color = SKColor.Parse("#db3498"),
-                },
+
                 new ChartEntry(428)
                 {
                     Label = "iOS",
                     ValueLabel = "428",
                     Color = SKColor.Parse("#b455b6"),
                 },
-                new ChartEntry(514)
-                {
-                    Label = "Forms",
-                    ValueLabel = "514",
-                    Color = SKColor.Parse("#3498db"),
-                }
             };
         }
 
@@ -415,7 +406,8 @@ namespace Microcharts.Samples
                 Chart = new RadialGaugeChart
                 {
                     Entries = GenerateDefaultXamarinEntries(),
-                    LabelTextSize = 42
+                    LabelTextSize = 42,
+                    MaxValue = 300
                 },
             };
 

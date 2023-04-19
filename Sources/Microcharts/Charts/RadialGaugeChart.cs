@@ -40,7 +40,7 @@ namespace Microcharts
         /// <value>The placement of the legend.</value>
         public bool ForceLegendRight { get; set; } = false;
 
-        private float AbsoluteMinimum => Entries?.Where(x=>x.Value.HasValue).Select(x => x.Value.Value).Concat(new[] { MaxValue, MinValue, InternalMinValue ?? 0 }).Min(x => Math.Abs(x)) ?? 0;
+        private float AbsoluteMinimum => Entries?.Where(x => x.Value.HasValue).Select(x => x.Value.Value).Concat(new[] { MaxValue, MinValue, InternalMinValue ?? 0 }).Min(x => Math.Abs(x)) ?? 0;
 
         private float AbsoluteMaximum => Entries?.Where(x => x.Value.HasValue).Select(x => x.Value.Value).Concat(new[] { MaxValue, MinValue, InternalMinValue ?? 0 }).Max(x => Math.Abs(x)) ?? 0;
 
@@ -65,31 +65,78 @@ namespace Microcharts
             }
         }
 
-        public void DrawGauge(SKCanvas canvas, SKColor color, float value, float radius, int cx, int cy, float strokeWidth)
+        public void DrawGauge(SKCanvas canvas, ChartEntry entry, float radius, int cx, int cy, float strokeWidth)
         {
-            using (var paint = new SKPaint
+            var valToPaint = entry.Value;
+            var maxValue = InternalMaxValue.HasValue ? InternalMaxValue.Value : ValueRange;
+            if (maxValue <= 0)
+                maxValue = Math.Abs(valToPaint.Value);
+
+            int count = 0;
+
+            while (valToPaint > 0 && count < 4)
             {
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = strokeWidth,
-                StrokeCap = SKStrokeCap.Butt,
-                Color = color,
-                IsAntialias = true,
-            })
-            {
-                using (SKPath path = new SKPath())
+                var color = ChangeColorBrightness(entry.Color, RadialGaugeDarkenValue * count * -0.01f);
+
+                using (var paint = new SKPaint
                 {
-                    var sweepAngle = AnimationProgress * 360 * (Math.Abs(value) - AbsoluteMinimum) / ValueRange;
-                    path.AddArc(SKRect.Create(cx - radius, cy - radius, 2 * radius, 2 * radius), StartAngle, sweepAngle);
-                    canvas.DrawPath(path, paint);
+                    Style = SKPaintStyle.Stroke,
+                    StrokeWidth = strokeWidth,
+                    StrokeCap = SKStrokeCap.Butt,
+                    Color = color,
+                    IsAntialias = true,
+                })
+                {
+                    using (SKPath path = new SKPath())
+                    {
+                        var sweepAngle = AnimationProgress * 360 * Math.Abs(valToPaint.Value) / maxValue;
+                        path.AddArc(SKRect.Create(cx - radius, cy - radius, 2 * radius, 2 * radius), StartAngle, sweepAngle);
+                        canvas.DrawPath(path, paint);
+                    }
                 }
+
+                valToPaint -= maxValue;
+                count++;
             }
+        }
+
+        /// <summary>
+        /// Creates color with corrected brightness.
+        /// </summary>
+        /// <param name="color">Color to correct.</param>
+        /// <param name="correctionFactor">The brightness correction factor. Must be between -1 and 1. 
+        /// Negative values produce darker colors.</param>
+        /// <returns>
+        /// Corrected <see cref="SKColor"/> structure.
+        /// </returns>
+        public static SKColor ChangeColorBrightness(SKColor color, float correctionFactor)
+        {
+            float red = color.Red;
+            float green = color.Green;
+            float blue = color.Blue;
+
+            if (correctionFactor < 0)
+            {
+                correctionFactor = 1 + correctionFactor;
+                red *= correctionFactor;
+                green *= correctionFactor;
+                blue *= correctionFactor;
+            }
+            else
+            {
+                red = (255 - red) * correctionFactor + red;
+                green = (255 - green) * correctionFactor + green;
+                blue = (255 - blue) * correctionFactor + blue;
+            }
+
+            return new SKColor((byte)red, (byte)green, (byte)blue, color.Alpha);
         }
 
         public override void DrawContent(SKCanvas canvas, int width, int height)
         {
             if (Entries != null)
             {
-                var sumValue = Entries.Where( x=>x.Value.HasValue).Sum(x => Math.Abs(x.Value.Value));
+                var sumValue = Entries.Where(x => x.Value.HasValue).Sum(x => Math.Abs(x.Value.Value));
                 var radius = (Math.Min(width, height) - (2 * Margin)) / 2;
                 var cx = Convert.ToInt32(radius);
                 var cy = height / 2;
@@ -105,7 +152,7 @@ namespace Microcharts
 
                     var entryRadius = (i + 1) * radiusSpace;
                     DrawGaugeArea(canvas, entry, entryRadius, cx, cy, lineWidth);
-                    DrawGauge(canvas, entry.Color, entry.Value.Value, entryRadius, cx, cy, lineWidth);
+                    DrawGauge(canvas, entry, entryRadius, cx, cy, lineWidth);
                 }
 
                 //Make sure captions draw on top of chart

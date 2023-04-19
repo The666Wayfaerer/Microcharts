@@ -43,6 +43,7 @@ namespace Microcharts
 
         private CancellationTokenSource animationCancellation;
 
+        private int radialGaugeDarkenValue = 30;
         #endregion
 
         #region Constructors
@@ -285,6 +286,16 @@ namespace Microcharts
         /// </summary>
         protected SKRect DrawableChartArea { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the darken value from the radial gauge chart
+        /// For each extra round the color gets darker
+        /// </summary>
+        /// <value>The darken value.</value>
+        public int RadialGaugeDarkenValue
+        {
+            get => radialGaugeDarkenValue;
+            set => Set(ref radialGaugeDarkenValue, value);
+        }
         #endregion
 
         #region Methods
