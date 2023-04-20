@@ -251,6 +251,7 @@ namespace Microcharts.Samples
                     Label = "UWP",
                     ValueLabel = "112",
                     Color = SKColor.Parse("#2c3e50"),
+                    EntryMaxValue = 200
                 },
                 new ChartEntry(648)
                 {
@@ -264,6 +265,7 @@ namespace Microcharts.Samples
                     Label = "iOS",
                     ValueLabel = "428",
                     Color = SKColor.Parse("#b455b6"),
+                    EntryMaxValue = 300
                 },
             };
         }

@@ -68,7 +68,18 @@ namespace Microcharts
         public void DrawGauge(SKCanvas canvas, ChartEntry entry, float radius, int cx, int cy, float strokeWidth)
         {
             var valToPaint = entry.Value;
-            var maxValue = InternalMaxValue.HasValue ? InternalMaxValue.Value : ValueRange;
+            float maxValue;
+
+            if (entry.EntryMaxValue >= 0)
+            {
+                //max value for entry is set
+                maxValue = entry.EntryMaxValue;
+            }
+            else
+            {
+                maxValue = InternalMaxValue.HasValue ? InternalMaxValue.Value : ValueRange;
+            }
+
             if (maxValue <= 0)
                 maxValue = Math.Abs(valToPaint.Value);
 

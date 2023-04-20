@@ -67,6 +67,11 @@ namespace Microcharts
         /// <value>The color of the value label.</value>
         public SKColor ValueLabelColor { get; set; } = SKColors.Black;
 
+        /// <summary>
+        /// Gets or sets max value for entry
+        /// </summary>
+        /// <value>Max value for entry to be able to display separate max values for different entries in the same chart</value>
+        public float EntryMaxValue { get; set; } = -1;
         #endregion
     }
 }
