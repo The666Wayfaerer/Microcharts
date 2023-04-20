@@ -225,7 +225,8 @@ namespace Microcharts.Samples
                 {
                     Entries = entries,
                     LabelTextSize = 42,
-                    MaxValue = 360
+                    MaxValue = 360,
+                    ForceLegendRight = true,
 
                 },
                 new HalfRadialGaugeChart
